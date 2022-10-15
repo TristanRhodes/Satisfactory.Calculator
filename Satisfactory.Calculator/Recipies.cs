@@ -95,19 +95,19 @@
         public static readonly Recipie Wire =
              new Recipie(
                 RecipieCodes.Wire,
-                new ItemQuantity(ItemCodes.Wire, 9),
-                TimeSpan.FromSeconds(24),
+                new ItemQuantity(ItemCodes.Wire, 2),
+                TimeSpan.FromSeconds(4),
                 new[] {
-                    new ItemQuantity(ItemCodes.IronIngot, 5)
+                    new ItemQuantity(ItemCodes.CopperIngot, 1)
                 });
 
         public static readonly Recipie IronWire =
              new Recipie(
                 RecipieCodes.IronWire,
-                new ItemQuantity(ItemCodes.Wire, 2),
-                TimeSpan.FromSeconds(4),
+                new ItemQuantity(ItemCodes.Wire, 9),
+                TimeSpan.FromSeconds(24),
                 new[] {
-                    new ItemQuantity(ItemCodes.CopperIngot, 1)
+                    new ItemQuantity(ItemCodes.IronIngot, 5)
                 });
 
         public static readonly Recipie Cable = new Recipie(

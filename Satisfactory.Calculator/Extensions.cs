@@ -1,4 +1,6 @@
-﻿namespace Satisfactory.Calculator
+﻿using System.Linq;
+
+namespace Satisfactory.Calculator
 {
     public static class Extensions
     {
@@ -25,6 +27,15 @@
 
             return recipie;
         }
-    }
 
+        public static string GetCode(this Stack<Recipie> recipieStack)
+        {
+            return string.Join(".", recipieStack.Reverse());
+        }
+
+        public static string GetParentCode(this Stack<Recipie> recipieStack)
+        {
+            return string.Join(".", recipieStack.Skip(1).Reverse());
+        }
+    }
 }

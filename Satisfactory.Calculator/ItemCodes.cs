@@ -22,5 +22,4 @@
         public const string IronPlate = "Iron Plate";
         public const string IronRods = "Iron Rods";
     }
-
 }

@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-
-namespace Satisfactory.Calculator
+﻿namespace Satisfactory.Calculator
 {
     public class RecipieRegister
     {
@@ -20,14 +18,14 @@ namespace Satisfactory.Calculator
                 .Where(r => r.Input.Any(i => i.ItemCode == itemCode));
         }
 
-        internal Recipie GetByRecipie(string recipieCode)
+        public Recipie GetByRecipie(string recipieCode)
         {
             return _recipies
                 .Values
                 .Single(r => r.Code == recipieCode);
         }
 
-        internal void Add(Recipie recipie)
+        public void Add(Recipie recipie)
         {
             _recipies.Add(recipie.Code, recipie);
         }
