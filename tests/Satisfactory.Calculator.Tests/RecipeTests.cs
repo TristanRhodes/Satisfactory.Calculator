@@ -67,7 +67,6 @@ namespace Satisfactory.Calculator.Tests
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
 
-
             var process = Process
                 .Start(startInfo);
 
