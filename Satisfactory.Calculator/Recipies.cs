@@ -2,6 +2,27 @@
 {
     public static class Recipies
     {
+        public static readonly Recipie IronOre =
+            new Recipie(
+                RecipieCodes.IronOre,
+                Array.Empty<ItemQuantity>(),
+                new[] { new ItemQuantity(ItemCodes.IronOre, 1) },
+                TimeSpan.FromSeconds(1));
+
+        public static readonly Recipie CopperOre =
+            new Recipie(
+                RecipieCodes.CopperOre,
+                Array.Empty<ItemQuantity>(),
+                new[] { new ItemQuantity(ItemCodes.CopperOre, 1) },
+                TimeSpan.FromSeconds(1));
+
+        public static readonly Recipie RawQuartz =
+            new Recipie(
+                RecipieCodes.RawQuartz,
+                Array.Empty<ItemQuantity>(),
+                new[] { new ItemQuantity(ItemCodes.RawQuartz, 1) },
+                TimeSpan.FromSeconds(0.5));
+
         public static readonly Recipie IronIngot =
             new Recipie(
                 RecipieCodes.IronIngot,
@@ -29,6 +50,27 @@
                 new ItemQuantity(ItemCodes.IronPlate, 2),
                 TimeSpan.FromSeconds(6),
                 new ItemQuantity(ItemCodes.IronIngot, 3));
+
+        public static readonly Recipie IronRods =
+            new Recipie(
+                RecipieCodes.IronRods,
+                new[] { new ItemQuantity(ItemCodes.IronIngot, 1) },
+                new[] { new ItemQuantity(ItemCodes.IronRods, 1) },
+                TimeSpan.FromSeconds(4));
+
+        public static readonly Recipie Screws =
+            new Recipie(
+                RecipieCodes.Screws,
+                new[] { new ItemQuantity(ItemCodes.IronRods, 1) },
+                new[] { new ItemQuantity(ItemCodes.Screws, 4) },
+                TimeSpan.FromSeconds(6));
+
+        public static readonly Recipie CastScrews =
+            new Recipie(
+                RecipieCodes.CastScrews,
+                new[] { new ItemQuantity(ItemCodes.IronIngot, 5) },
+                new[] { new ItemQuantity(ItemCodes.Screws, 20) },
+                TimeSpan.FromSeconds(24));
 
         public static readonly Recipie ReinforcedIronPlate = 
             new Recipie(

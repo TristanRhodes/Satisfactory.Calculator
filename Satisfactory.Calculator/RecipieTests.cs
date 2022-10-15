@@ -37,6 +37,15 @@ namespace Satisfactory.Calculator
         }
 
         [Fact]
+        public void IronRods()
+        {
+            var recipie = _recipies
+                .GetByRecipie(RecipieCodes.IronRods);
+
+            recipie.Print();
+        }
+
+        [Fact]
         public void ReinforcedIronPlates()
         {
             var recipie = _recipies
@@ -100,32 +109,4 @@ namespace Satisfactory.Calculator
         }
     }
 
-    public static class RecipieLoader
-    {
-        public static RecipieRegister GetRegister()
-        {
-            var register = new RecipieRegister();
-
-            // Raw Materials
-            //register.Add(Recipies.CopperOre);
-            //register.Add(Recipies.IronOre);
-            //register.Add(Recipies.RawQuartz);
-
-            // Ingots
-            register.Add(Recipies.CopperIngot);
-            register.Add(Recipies.IronIngot);
-            register.Add(Recipies.QuartzCrystal);
-
-            // Other
-            register.Add(Recipies.Wire);
-            register.Add(Recipies.IronWire);
-            register.Add(Recipies.IronPlate);
-            register.Add(Recipies.Cable);
-            register.Add(Recipies.ReinforcedIronPlate);
-            register.Add(Recipies.BoltedReinforcedIronPlate);
-            register.Add(Recipies.CrystalOscillator);
-            
-            return register;
-        }
-    }
 }

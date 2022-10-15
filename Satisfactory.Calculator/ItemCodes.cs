@@ -20,6 +20,7 @@
         public const string Cable = "Cable";
         public const string Screws = "Screws";
         public const string IronPlate = "Iron Plate";
+        public const string IronRods = "Iron Rods";
     }
 
 }
