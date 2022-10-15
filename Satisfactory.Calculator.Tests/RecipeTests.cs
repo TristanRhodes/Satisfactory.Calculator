@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Drawing;
 using Xunit;
+using Microsoft.Extensions.Configuration;
 
 namespace Satisfactory.Calculator.Tests
 {
@@ -51,9 +52,9 @@ namespace Satisfactory.Calculator.Tests
 
             var dot = graph.Compile(true);
 
-            // TODO: Parameterise
-            var fileDirectory = "C:\\temp\\satisfactory";
-            var dotExe = "C:\\Program Files\\Graphviz\\bin\\dot";
+            var config = Config.Configuration;
+            var fileDirectory = config["output-directory"];
+            var dotExe = config["dot-exe"];
 
             if (!Directory.Exists(fileDirectory))
                 Directory.CreateDirectory(fileDirectory);
