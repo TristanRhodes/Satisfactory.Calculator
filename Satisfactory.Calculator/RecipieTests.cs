@@ -82,17 +82,19 @@ namespace Satisfactory.Calculator
         }
 
         [Fact]
+        public void QuartzCrystal()
+        {
+            var recipie = _recipies
+                .GetByRecipie(RecipieCodes.QuartzCrystal);
+
+            recipie.Print();
+        }
+
+        [Fact]
         public void CrystalOscillator()
         {
-            var recipie = new Recipie(
-                RecipieCodes.CrystalOscillator,
-                new ItemQuantity(ItemCodes.CrystalOscillator, 2),
-                TimeSpan.FromSeconds(120),
-                new[] {
-                    new ItemQuantity(ItemCodes.QuartzCrystal, 36),
-                    new ItemQuantity(ItemCodes.Cable, 28),
-                    new ItemQuantity(ItemCodes.ReinforcedIronPlate, 5)
-                });
+            var recipie = _recipies
+                .GetByRecipie(RecipieCodes.CrystalOscillator);
 
             recipie.Print();
         }
@@ -103,12 +105,26 @@ namespace Satisfactory.Calculator
         public static RecipieRegister GetRegister()
         {
             var register = new RecipieRegister();
-            register.Add(Recipies.IronPlate);
-            register.Add(Recipies.IronWire);
+
+            // Raw Materials
+            //register.Add(Recipies.CopperOre);
+            //register.Add(Recipies.IronOre);
+            //register.Add(Recipies.RawQuartz);
+
+            // Ingots
+            register.Add(Recipies.CopperIngot);
+            register.Add(Recipies.IronIngot);
+            register.Add(Recipies.QuartzCrystal);
+
+            // Other
             register.Add(Recipies.Wire);
+            register.Add(Recipies.IronWire);
+            register.Add(Recipies.IronPlate);
             register.Add(Recipies.Cable);
             register.Add(Recipies.ReinforcedIronPlate);
             register.Add(Recipies.BoltedReinforcedIronPlate);
+            register.Add(Recipies.CrystalOscillator);
+            
             return register;
         }
     }

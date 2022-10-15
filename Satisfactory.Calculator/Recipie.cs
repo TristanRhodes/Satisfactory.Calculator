@@ -5,15 +5,24 @@
         public Recipie(string code, ItemQuantity production, TimeSpan timeSpan, params ItemQuantity[] input)
         {
             Code = code;
-            Output = production;
+            Output = new List<ItemQuantity>() { production };
+            Duration = timeSpan;
+            Input = input.ToList();
+        }
+
+        public Recipie(string code, ItemQuantity[] input, ItemQuantity[] output, TimeSpan timeSpan)
+        {
+            Code = code;
+            Output = output.ToList();
             Duration = timeSpan;
             Input = input.ToList();
         }
 
         public string Code { get; }
-        public ItemQuantity Output { get;  }
 
         public List<ItemQuantity> Input { get;  }
+
+        public List<ItemQuantity> Output { get; }
 
         public TimeSpan Duration { get; }
 
@@ -22,5 +31,7 @@
             var timespan = TimeSpan.FromMinutes(1);
             return timespan / Duration;
         }
+
+        public override string ToString() => Code;
     }
 }

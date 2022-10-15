@@ -2,6 +2,11 @@
 {
     public static class RecipieCodes
     {
+        public const string IronIngot = "IronIngot";
+        public const string CopperIngot = "CopperIngot";
+
+        public const string QuartzCrystal = "QuartzCrystal";
+
         public const string Wire = "Wire";
         public const string IronWire = "IronWire";
 
