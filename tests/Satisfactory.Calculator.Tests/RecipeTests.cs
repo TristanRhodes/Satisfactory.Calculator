@@ -63,11 +63,18 @@ namespace Satisfactory.Calculator.Tests
             File.WriteAllText(dotFile, dot);
             var pngFile = Path.Combine(fileDirectory, $"{source.Code}.png");
 
-            var startInfo = new ProcessStartInfo(dotExe, $"-Tpng {dotFile} -o {pngFile}");
+            var startInfo = new ProcessStartInfo(dotExe, $"-Tpng \"{dotFile}\" -o \"{pngFile}\"");
             startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+
 
             var process = Process
                 .Start(startInfo);
+
+            var std = process.StandardOutput.ReadToEnd();
+            Console.WriteLine(std);
+            var err = process.StandardError.ReadToEnd();
+            Console.WriteLine(err);
 
             await process.WaitForExitAsync();
         }
