@@ -27,7 +27,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\Satisfactory.Calculator\Satisfactory.Calculator.csproj" />
+    <ProjectReference Include="..\..\src\Satisfactory.Calculator\Satisfactory.Calculator.csproj" />
   </ItemGroup>
 
 </Project>
