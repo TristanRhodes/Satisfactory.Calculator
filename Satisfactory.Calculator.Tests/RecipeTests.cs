@@ -73,7 +73,7 @@ namespace Satisfactory.Calculator.Tests
 
         private void OutputForRecipe(Recipe recipe, IDotGraph graph, Stack<Recipe> stack)
         {
-            const bool useFullName = true;
+            const bool useFullName = false;
             Log($"Recipe: {recipe.Code}");
 
             stack.Push(recipe);
@@ -125,22 +125,29 @@ namespace Satisfactory.Calculator.Tests
 
                 Log($"Output: {outputCode} x {quantity}");
 
-                var node = graph.AddNode(outputCode, n =>
-                {
-                    n.Shape = DotNodeShape.Oval;
-                    n.Label = useFullName ? outputCode : output.ItemCode;
-                    n.FillColor = Color.LightSalmon;
-                    n.Color = Color.DarkGray;
-                    n.Style = DotNodeStyle.Filled;
-                });
 
-                graph.AddEdge(recipeCode, outputCode, e =>
-                {
-                    e.Label = $"Output: {output.ItemCode} x {quantity} ({ticksPerMin * quantity}pm)";
-                });
-                
                 if (stack.Count > 1)
-                    graph.AddEdge(outputCode, parentInputCode);
+                    graph.AddEdge(recipeCode, parentInputCode, e =>
+                    {
+                        e.Label = $"Output: {output.ItemCode} x {quantity} ({ticksPerMin * quantity}pm)";
+                    });
+
+                if (stack.Count == 1)
+                {
+                    var node = graph.AddNode(outputCode, n =>
+                    {
+                        n.Shape = DotNodeShape.Oval;
+                        n.Label = useFullName ? outputCode : output.ItemCode;
+                        n.FillColor = Color.LightBlue;
+                        n.Color = Color.DarkGray;
+                        n.Style = DotNodeStyle.Filled;
+                    });
+
+                    graph.AddEdge(recipeCode, outputCode, e =>
+                    {
+                        e.Label = $"Output: {output.ItemCode} x {quantity} ({ticksPerMin * quantity}pm)";
+                    });
+                }
             }
 
             stack.Pop();
