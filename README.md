@@ -1,6 +1,10 @@
 # Satisfactory.Calculator
 
+[Satisfactory](https://www.satisfactorygame.com/) is a factory simulation game. Mine stuff, smelt stuff, construct stuff, use the constructed stuff to construct more stuff. Rinse and repeat.
+
 This is a sandbox for playing around with Satisfactory calculations. The aim here is to build a system where you can load all available recipies, and it can suggest the best recipies based on your selected inputs.
+
+Currently we generate a DOT graph from a simple model in a C# application, and then feed this into GraphViz which generates an image.
 
 ## Dependencies
 
@@ -16,10 +20,10 @@ We currently have two configuration values in the app settings:
 
 Run `dotnet test` from the root directory.
 
-Currently this application is only tests. Running the tests will generate a number of DOT files and images of a few pre-configured recipes.
+Currently this application is only tests, and only tested on windows. Running the tests will generate a number of DOT files and images of a few pre-configured recipes.
 
 ## Output
 
 Output currently looks like this:
 
-![Diagram](/assets/Crystal Oscillator.png)
+![Diagram](https://raw.githubusercontent.com/TristanRhodes/Satisfactory.Calculator/master/assets/Crystal%20Oscillator.png)
