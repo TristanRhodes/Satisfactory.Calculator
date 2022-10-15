@@ -71,27 +71,27 @@ namespace Satisfactory.Calculator.Tests
             await process.WaitForExitAsync();
         }
 
-        private void OutputForRecipe(Recipe Recipe, IDotGraph graph, Stack<Recipe> stack)
+        private void OutputForRecipe(Recipe recipe, IDotGraph graph, Stack<Recipe> stack)
         {
-            const bool useFullName = false;
-            Log($"Recipe: {Recipe.Code}");
+            const bool useFullName = true;
+            Log($"Recipe: {recipe.Code}");
 
-            stack.Push(Recipe);
-            var RecipeCode = stack.GetCode();
-            var ticksPerMin = 60 / Recipe.Duration.TotalSeconds;
+            stack.Push(recipe);
+            var recipeCode = stack.GetCode();
+            var ticksPerMin = 60 / recipe.Duration.TotalSeconds;
 
-            var RecipeNode = graph.AddNode(RecipeCode, n =>
+            var RecipeNode = graph.AddNode(recipeCode, n =>
             {
                 n.Shape = DotNodeShape.Oval;
-                n.Label = (useFullName ? RecipeCode : Recipe.Code) + $"{Environment.NewLine}{Recipe.Duration.TotalSeconds}s ({ticksPerMin}tpm)" ;
+                n.Label = (useFullName ? recipeCode : recipe.Code) + $"{Environment.NewLine}{recipe.Duration.TotalSeconds}s ({ticksPerMin}tpm)" ;
                 n.FillColor = Color.LightGreen;
                 n.Color = Color.DarkGray;
                 n.Style = DotNodeStyle.Filled;
             });
 
-            foreach (var input in Recipe.Input)
+            foreach (var input in recipe.Input)
             {
-                var inputCode = $"{RecipeCode}.in.{input.ItemCode}";
+                var inputCode = $"{recipeCode}.prod.{input.ItemCode}";
                 var quantity = input.Quantity;
 
                 Log($"Input: {inputCode} x {quantity}");
@@ -105,7 +105,7 @@ namespace Satisfactory.Calculator.Tests
                     n.Style = DotNodeStyle.Filled;
                 });
 
-                graph.AddEdge(inputCode, RecipeCode, e =>
+                graph.AddEdge(inputCode, recipeCode, e =>
                 {
                     e.Label = $"Input: {input.ItemCode} x {quantity} ({ticksPerMin * quantity}pm)";
                 });
@@ -117,10 +117,10 @@ namespace Satisfactory.Calculator.Tests
                 }
             }
 
-            foreach (var output in Recipe.Output)
+            foreach (var output in recipe.Output)
             {
-                var parentInputCode = $"{stack.GetParentCode()}.in.{output.ItemCode}";
-                var outputCode = $"{RecipeCode}.out.{output.ItemCode}";
+                var parentInputCode = $"{stack.GetParentCode()}.prod.{output.ItemCode}";
+                var outputCode = $"{recipeCode}.prod.{output.ItemCode}";
                 var quantity = output.Quantity;
 
                 Log($"Output: {outputCode} x {quantity}");
@@ -134,7 +134,7 @@ namespace Satisfactory.Calculator.Tests
                     n.Style = DotNodeStyle.Filled;
                 });
 
-                graph.AddEdge(RecipeCode, outputCode, e =>
+                graph.AddEdge(recipeCode, outputCode, e =>
                 {
                     e.Label = $"Output: {output.ItemCode} x {quantity} ({ticksPerMin * quantity}pm)";
                 });

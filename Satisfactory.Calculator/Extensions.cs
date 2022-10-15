@@ -4,28 +4,28 @@ namespace Satisfactory.Calculator
 {
     public static class Extensions
     {
-        public static Recipe Print(this Recipe Recipe)
+        public static Recipe Print(this Recipe recipe)
         {
-            Console.WriteLine($"Duration: {Recipe.Duration}");
+            Console.WriteLine($"Duration: {recipe.Duration}");
 
-            var ticksPerMin = Recipe.TicksPerMin();
+            var ticksPerMin = recipe.TicksPerMin();
             Console.WriteLine($"Ticks per Min: {ticksPerMin}");
 
             Console.WriteLine("Input: ");
-            foreach (var item in Recipe.Input)
+            foreach (var item in recipe.Input)
             {
                 var consumptionPerMin = item.Quantity * ticksPerMin;
                 Console.WriteLine($"{item.Quantity} ({consumptionPerMin}) {item.ItemCode}");
             }
 
             Console.WriteLine("Output: ");
-            foreach (var item in Recipe.Output)
+            foreach (var item in recipe.Output)
             {
                 var prodPerMin = item.Quantity * ticksPerMin;
                 Console.WriteLine($"{item.Quantity} ({prodPerMin}) {item.ItemCode}");
             }
 
-            return Recipe;
+            return recipe;
         }
 
         public static string GetCode(this Stack<Recipe> RecipeStack)
