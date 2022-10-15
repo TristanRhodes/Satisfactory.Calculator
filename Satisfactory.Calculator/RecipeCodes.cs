@@ -1,6 +1,6 @@
 ﻿namespace Satisfactory.Calculator
 {
-    public static class RecipieCodes
+    public static class RecipeCodes
     {
         // Raw Materials
         public const string IronOre = "Iron Ore";

@@ -1,8 +1,8 @@
 ﻿namespace Satisfactory.Calculator
 {
-    public class Recipie
+    public class Recipe
     {
-        public Recipie(string code, ItemQuantity production, TimeSpan timeSpan, params ItemQuantity[] input)
+        public Recipe(string code, ItemQuantity production, TimeSpan timeSpan, params ItemQuantity[] input)
         {
             Code = code;
             Output = new List<ItemQuantity>() { production };
@@ -10,7 +10,7 @@
             Input = input.ToList();
         }
 
-        public Recipie(string code, ItemQuantity[] input, ItemQuantity[] output, TimeSpan timeSpan)
+        public Recipe(string code, ItemQuantity[] input, ItemQuantity[] output, TimeSpan timeSpan)
         {
             Code = code;
             Output = output.ToList();

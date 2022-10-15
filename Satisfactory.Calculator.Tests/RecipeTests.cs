@@ -11,13 +11,13 @@ using Xunit;
 
 namespace Satisfactory.Calculator.Tests
 {
-    public class RecipieTests
+    public class RecipeTests
     {
-        RecipieRegister _recipies;
+        RecipeRegister _Recipes;
 
-        public RecipieTests()
+        public RecipeTests()
         {
-            _recipies = RecipieLoader.GetRegister();
+            _Recipes = RecipeLoader.GetRegister();
         }
 
         [Theory]
@@ -26,28 +26,28 @@ namespace Satisfactory.Calculator.Tests
         [InlineData(4, 15)]
         public void TicksPerMin(int seconds, int ticksPerMin)
         {
-            var recipie = new Recipie("Name",
+            var Recipe = new Recipe("Name",
                 new[] { new ItemQuantity("Input", 1) },
                 new[] { new ItemQuantity("Output", 1) },
                 TimeSpan.FromSeconds(seconds));
 
-            recipie.TicksPerMin()
+            Recipe.TicksPerMin()
                 .Should().Be(ticksPerMin);
         }
 
         [Theory]
-        [InlineData(RecipieCodes.CrystalOscillator)]
-        [InlineData(RecipieCodes.IronIngot)]
-        [InlineData(RecipieCodes.ReinforcedIronPlate)]
-        public async Task Generate(string recipie)
+        [InlineData(RecipeCodes.CrystalOscillator)]
+        [InlineData(RecipeCodes.IronIngot)]
+        [InlineData(RecipeCodes.ReinforcedIronPlate)]
+        public async Task Generate(string Recipe)
         {
-            var source = _recipies.GetByRecipie(recipie);
+            var source = _Recipes.GetByRecipe(Recipe);
 
             var graph = new DotGraph(source.Code, true);
 
 
-            var stack = new Stack<Recipie>();
-            OutputForRecipie(source, graph, stack);
+            var stack = new Stack<Recipe>();
+            OutputForRecipe(source, graph, stack);
 
             var dot = graph.Compile(true);
 
@@ -71,27 +71,27 @@ namespace Satisfactory.Calculator.Tests
             await process.WaitForExitAsync();
         }
 
-        private void OutputForRecipie(Recipie recipie, IDotGraph graph, Stack<Recipie> stack)
+        private void OutputForRecipe(Recipe Recipe, IDotGraph graph, Stack<Recipe> stack)
         {
             const bool useFullName = false;
-            Log($"Recipie: {recipie.Code}");
+            Log($"Recipe: {Recipe.Code}");
 
-            stack.Push(recipie);
-            var recipieCode = stack.GetCode();
-            var ticksPerMin = 60 / recipie.Duration.TotalSeconds;
+            stack.Push(Recipe);
+            var RecipeCode = stack.GetCode();
+            var ticksPerMin = 60 / Recipe.Duration.TotalSeconds;
 
-            var recipieNode = graph.AddNode(recipieCode, n =>
+            var RecipeNode = graph.AddNode(RecipeCode, n =>
             {
                 n.Shape = DotNodeShape.Oval;
-                n.Label = (useFullName ? recipieCode : recipie.Code) + $"{Environment.NewLine}{recipie.Duration.TotalSeconds}s ({ticksPerMin}tpm)" ;
+                n.Label = (useFullName ? RecipeCode : Recipe.Code) + $"{Environment.NewLine}{Recipe.Duration.TotalSeconds}s ({ticksPerMin}tpm)" ;
                 n.FillColor = Color.LightGreen;
                 n.Color = Color.DarkGray;
                 n.Style = DotNodeStyle.Filled;
             });
 
-            foreach (var input in recipie.Input)
+            foreach (var input in Recipe.Input)
             {
-                var inputCode = $"{recipieCode}.in.{input.ItemCode}";
+                var inputCode = $"{RecipeCode}.in.{input.ItemCode}";
                 var quantity = input.Quantity;
 
                 Log($"Input: {inputCode} x {quantity}");
@@ -105,22 +105,22 @@ namespace Satisfactory.Calculator.Tests
                     n.Style = DotNodeStyle.Filled;
                 });
 
-                graph.AddEdge(inputCode, recipieCode, e =>
+                graph.AddEdge(inputCode, RecipeCode, e =>
                 {
                     e.Label = $"Input: {input.ItemCode} x {quantity} ({ticksPerMin * quantity}pm)";
                 });
 
-                var inputRecipies = _recipies.GetByOutputItem(input.ItemCode);
-                foreach (var inputRecipie in inputRecipies)
+                var inputRecipes = _Recipes.GetByOutputItem(input.ItemCode);
+                foreach (var inputRecipe in inputRecipes)
                 {
-                    OutputForRecipie(inputRecipie, graph, stack);
+                    OutputForRecipe(inputRecipe, graph, stack);
                 }
             }
 
-            foreach (var output in recipie.Output)
+            foreach (var output in Recipe.Output)
             {
                 var parentInputCode = $"{stack.GetParentCode()}.in.{output.ItemCode}";
-                var outputCode = $"{recipieCode}.out.{output.ItemCode}";
+                var outputCode = $"{RecipeCode}.out.{output.ItemCode}";
                 var quantity = output.Quantity;
 
                 Log($"Output: {outputCode} x {quantity}");
@@ -134,7 +134,7 @@ namespace Satisfactory.Calculator.Tests
                     n.Style = DotNodeStyle.Filled;
                 });
 
-                graph.AddEdge(recipieCode, outputCode, e =>
+                graph.AddEdge(RecipeCode, outputCode, e =>
                 {
                     e.Label = $"Output: {output.ItemCode} x {quantity} ({ticksPerMin * quantity}pm)";
                 });

@@ -4,38 +4,38 @@ namespace Satisfactory.Calculator
 {
     public static class Extensions
     {
-        public static Recipie Print(this Recipie recipie)
+        public static Recipe Print(this Recipe Recipe)
         {
-            Console.WriteLine($"Duration: {recipie.Duration}");
+            Console.WriteLine($"Duration: {Recipe.Duration}");
 
-            var ticksPerMin = recipie.TicksPerMin();
+            var ticksPerMin = Recipe.TicksPerMin();
             Console.WriteLine($"Ticks per Min: {ticksPerMin}");
 
             Console.WriteLine("Input: ");
-            foreach (var item in recipie.Input)
+            foreach (var item in Recipe.Input)
             {
                 var consumptionPerMin = item.Quantity * ticksPerMin;
                 Console.WriteLine($"{item.Quantity} ({consumptionPerMin}) {item.ItemCode}");
             }
 
             Console.WriteLine("Output: ");
-            foreach (var item in recipie.Output)
+            foreach (var item in Recipe.Output)
             {
                 var prodPerMin = item.Quantity * ticksPerMin;
                 Console.WriteLine($"{item.Quantity} ({prodPerMin}) {item.ItemCode}");
             }
 
-            return recipie;
+            return Recipe;
         }
 
-        public static string GetCode(this Stack<Recipie> recipieStack)
+        public static string GetCode(this Stack<Recipe> RecipeStack)
         {
-            return string.Join(".", recipieStack.Reverse());
+            return string.Join(".", RecipeStack.Reverse());
         }
 
-        public static string GetParentCode(this Stack<Recipie> recipieStack)
+        public static string GetParentCode(this Stack<Recipe> RecipeStack)
         {
-            return string.Join(".", recipieStack.Skip(1).Reverse());
+            return string.Join(".", RecipeStack.Skip(1).Reverse());
         }
     }
 }
