@@ -12,14 +12,16 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using FluentAssertions.Common;
+using Microsoft.Extensions.Logging;
 
 namespace Satisfactory.Calculator.Tests
 {
     public class RecipeTests
     {
-        private IServiceProvider _services;
+        IServiceProvider _services;
         IConfigurationRoot _config;
         RecipeRegister _recipes;
+        ILogger _logger;
         DotGraphProcessor _graphProcessor;
 
         public RecipeTests()
@@ -28,6 +30,7 @@ namespace Satisfactory.Calculator.Tests
 
             _config = _services.GetRequiredService<IConfigurationRoot>();
             _recipes = _services.GetRequiredService<RecipeRegister>();
+            _logger = _services.GetRequiredService<ILogger>();
             _graphProcessor = _services.GetRequiredService<DotGraphProcessor>();
         }
 
@@ -77,7 +80,7 @@ namespace Satisfactory.Calculator.Tests
             var graph = context.Graph;
 
             const bool useFullName = false;
-            Log($"Recipe: {recipe.Code}");
+            _logger.LogInformation($"Recipe: {recipe.Code}");
 
             var recipeCode = context.GetCode();
 
@@ -99,7 +102,7 @@ namespace Satisfactory.Calculator.Tests
                 var inputCode = $"{recipeCode}.prod.{input.ItemCode}";
                 var quantity = input.Quantity;
 
-                Log($"Input: {inputCode} x {quantity}");
+                _logger.LogInformation($"Input: {inputCode} x {quantity}");
 
                 var label = useFullName ? inputCode : input.ItemCode;
 
@@ -131,7 +134,7 @@ namespace Satisfactory.Calculator.Tests
                 var outputCode = $"{recipeCode}.prod.{output.ItemCode}";
                 var quantity = output.Quantity;
 
-                Log($"Output: {outputCode} x {quantity}");
+                _logger.LogInformation($"Output: {outputCode} x {quantity}");
 
 
                 if (context.Current != context.RootRecipie)
@@ -194,7 +197,5 @@ namespace Satisfactory.Calculator.Tests
             return htmlBuilder;
         }
 
-        private static void Log(string message) =>
-            Console.WriteLine(message);
     }
 }
