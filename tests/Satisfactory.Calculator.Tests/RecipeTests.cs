@@ -58,7 +58,7 @@ namespace Satisfactory.Calculator.Tests
             var rootRecipie = _recipes.GetByRecipe(Recipe);
             var context = new CalculationContext(rootRecipie);
 
-            WalkRecipieGraph(context);
+            WalkRecipeGraph(context);
 
             var dot = context.Compile();
 
@@ -74,7 +74,7 @@ namespace Satisfactory.Calculator.Tests
             await _graphProcessor.GenerateImage(dotFile, pngFile);
         }
 
-        private void WalkRecipieGraph(CalculationContext context)
+        private void WalkRecipeGraph(CalculationContext context)
         {
             var recipe = context.Current;
             var graph = context.Graph;
@@ -124,7 +124,7 @@ namespace Satisfactory.Calculator.Tests
                 foreach (var inputRecipe in inputRecipes)
                 {
                     context.Push(inputRecipe);
-                    WalkRecipieGraph(context);
+                    WalkRecipeGraph(context);
                 }
             }
 
