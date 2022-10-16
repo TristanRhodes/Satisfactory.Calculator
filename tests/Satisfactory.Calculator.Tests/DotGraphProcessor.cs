@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Satisfactory.Calculator.Tests
 {
@@ -9,10 +10,12 @@ namespace Satisfactory.Calculator.Tests
     public class DotGraphProcessor
     {
         IConfigurationRoot _config;
+        ILogger _logger;
 
-        public DotGraphProcessor(IConfigurationRoot config)
+        public DotGraphProcessor(IConfigurationRoot config, ILogger logger)
         {
             _config = config;
+            _logger = logger;
         }
 
         public async Task GenerateImage(string dotFile, string pngFile)
@@ -26,9 +29,12 @@ namespace Satisfactory.Calculator.Tests
                 .Start(startInfo);
 
             var err = process.StandardError.ReadToEnd();
-            Console.WriteLine(err);
+            if (!string.IsNullOrEmpty(err))
+                throw new ApplicationException(err);
+
             var std = process.StandardOutput.ReadToEnd();
-            Console.WriteLine(std);
+            if (!string.IsNullOrEmpty(std))
+                _logger.LogInformation(std);
 
             await process.WaitForExitAsync();
         }

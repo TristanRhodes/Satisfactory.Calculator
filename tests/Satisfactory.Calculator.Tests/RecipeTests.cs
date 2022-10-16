@@ -9,20 +9,26 @@ using Xunit;
 using Microsoft.Extensions.Configuration;
 using DotNetGraph.Core;
 using System.Text;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using FluentAssertions.Common;
 
 namespace Satisfactory.Calculator.Tests
 {
     public class RecipeTests
     {
+        private IServiceProvider _services;
         IConfigurationRoot _config;
-        RecipeRegister _Recipes;
-         DotGraphProcessor _graphProcessor;
+        RecipeRegister _recipes;
+        DotGraphProcessor _graphProcessor;
 
         public RecipeTests()
         {
-            _config = Config.Configuration;
-            _Recipes = RecipeLoader.GetRegister();
-            _graphProcessor = new DotGraphProcessor(_config);
+            _services = Config.CreateServiceCollection();
+
+            _config = _services.GetRequiredService<IConfigurationRoot>();
+            _recipes = _services.GetRequiredService<RecipeRegister>();
+            _graphProcessor = _services.GetRequiredService<DotGraphProcessor>();
         }
 
         [Theory]
@@ -46,7 +52,7 @@ namespace Satisfactory.Calculator.Tests
         [InlineData(RecipeCodes.ReinforcedIronPlate)]
         public async Task Generate(string Recipe)
         {
-            var source = _Recipes.GetByRecipe(Recipe);
+            var source = _recipes.GetByRecipe(Recipe);
             var context = new CalculationContext(source.Code);
 
             OutputForRecipe(source, context);
@@ -64,8 +70,6 @@ namespace Satisfactory.Calculator.Tests
 
             await _graphProcessor.GenerateImage(dotFile, pngFile);
         }
-
-
 
         private void OutputForRecipe(Recipe recipe, CalculationContext context)
         {
@@ -115,7 +119,7 @@ namespace Satisfactory.Calculator.Tests
                     e.Label = $"Input: {input.ItemCode} x {quantity} ({ticksPerMin * quantity}pm)";
                 });
 
-                var inputRecipes = _Recipes.GetByOutputItem(input.ItemCode);
+                var inputRecipes = _recipes.GetByOutputItem(input.ItemCode);
                 foreach (var inputRecipe in inputRecipes)
                 {
                     OutputForRecipe(inputRecipe, context);
