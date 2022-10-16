@@ -18,6 +18,8 @@ namespace Satisfactory.Calculator.Tests
 {
     public class RecipeTests
     {
+        const bool _useFullName = false;
+
         IServiceProvider _services;
         IConfigurationRoot _config;
         RecipeRegister _recipes;
@@ -78,21 +80,19 @@ namespace Satisfactory.Calculator.Tests
         {
             var recipe = context.Current;
             var graph = context.Graph;
-
-            const bool useFullName = false;
-            _logger.LogInformation($"Recipe: {recipe.Code}");
-
             var recipeCode = context.GetCode();
 
-            var RecipeNode = graph.AddNode(recipeCode, n =>
+            _logger.LogInformation($"Recipe: {recipe.Code}");
+
+            graph.AddNode(recipeCode, n =>
             {
-                var label = useFullName ? recipeCode : recipe.Code;
+                var label = _useFullName ? recipeCode : recipe.Code;
                 var htmlBuilder = GetHtmlRepresentation(recipe, label);
 
                 n.Shape = DotNodeShape.None;
                 n.Label = label + $"{Environment.NewLine}";
                 n.SetCustomAttribute("label", $"<{htmlBuilder}>");
-                n.FillColor = Color.LightGreen;
+                n.FillColor = Color.LightGray;
                 n.Color = Color.DarkGray;
                 n.Style = DotNodeStyle.Filled;
             });
@@ -100,13 +100,11 @@ namespace Satisfactory.Calculator.Tests
             foreach (var input in recipe.Input)
             {
                 var inputCode = $"{recipeCode}.prod.{input.ItemCode}";
-                var quantity = input.Quantity;
+                var label = _useFullName ? inputCode : input.ItemCode;
 
-                _logger.LogInformation($"Input: {inputCode} x {quantity}");
+                _logger.LogInformation($"Input: {inputCode} x {input.Quantity}");
 
-                var label = useFullName ? inputCode : input.ItemCode;
-
-                var node = graph.AddNode(inputCode, n =>
+                graph.AddNode(inputCode, n =>
                 {
                     n.Shape = DotNodeShape.Oval;
                     n.Label = label;
@@ -117,7 +115,7 @@ namespace Satisfactory.Calculator.Tests
 
                 graph.AddEdge(inputCode, recipeCode, e =>
                 {
-                    e.Label = $"Input: {input.ItemCode} x {quantity} ({recipe.TicksPerMin * quantity}pm)";
+                    e.Label = BuildInputEdgeMessage(recipe, input);
                 });
 
                 var inputRecipes = _recipes.GetByOutputItem(input.ItemCode);
@@ -132,23 +130,24 @@ namespace Satisfactory.Calculator.Tests
             {
                 var parentInputCode = $"{context.GetParentCode()}.prod.{output.ItemCode}";
                 var outputCode = $"{recipeCode}.prod.{output.ItemCode}";
-                var quantity = output.Quantity;
 
-                _logger.LogInformation($"Output: {outputCode} x {quantity}");
+                _logger.LogInformation($"Output: {outputCode} x {output.Quantity}");
 
 
                 if (context.Current != context.RootRecipie)
                     graph.AddEdge(recipeCode, parentInputCode, e =>
                     {
-                        e.Label = $"Output: {output.ItemCode} x {quantity} ({recipe.GetOutputPerMin(output.ItemCode)}pm)";
+                        e.Label = BuildOutputEdgeMessage(recipe, output);
                     });
 
                 if (context.Current == context.RootRecipie)
                 {
-                    var node = graph.AddNode(outputCode, n =>
+                    var outputMessage = _useFullName ? outputCode : output.ItemCode;
+
+                    graph.AddNode(outputCode, n =>
                     {
                         n.Shape = DotNodeShape.Oval;
-                        n.Label = useFullName ? outputCode : output.ItemCode;
+                        n.Label = outputMessage;
                         n.FillColor = Color.LightBlue;
                         n.Color = Color.DarkGray;
                         n.Style = DotNodeStyle.Filled;
@@ -156,7 +155,7 @@ namespace Satisfactory.Calculator.Tests
 
                     graph.AddEdge(recipeCode, outputCode, e =>
                     {
-                        e.Label = $"Output: {output.ItemCode} x {quantity} ({recipe.GetOutputPerMin(output.ItemCode)}pm)";
+                        e.Label = BuildOutputEdgeMessage(recipe, output);
                     });
                 }
             }
@@ -164,6 +163,11 @@ namespace Satisfactory.Calculator.Tests
             context.Pop();
         }
 
+        private static string BuildInputEdgeMessage(Recipe recipe, ItemQuantity input) =>
+            $"Input: {input.ItemCode} x ({recipe.GetInputPerMin(input.ItemCode)}pm)";
+
+        private static string BuildOutputEdgeMessage(Recipe recipe, ItemQuantity output) => 
+            $"Output: {output.ItemCode} x {output.Quantity} ({recipe.GetOutputPerMin(output.ItemCode)}pm)";
         private static StringBuilder GetHtmlRepresentation(Recipe recipe, string label)
         {
             // https://www.graphviz.org/doc/info/shapes.html#html
@@ -196,6 +200,5 @@ namespace Satisfactory.Calculator.Tests
             htmlBuilder.AppendLine("</TABLE>");
             return htmlBuilder;
         }
-
     }
 }
