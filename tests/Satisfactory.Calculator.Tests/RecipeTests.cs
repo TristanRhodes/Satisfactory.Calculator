@@ -52,10 +52,10 @@ namespace Satisfactory.Calculator.Tests
         [InlineData(RecipeCodes.ReinforcedIronPlate)]
         public async Task Generate(string Recipe)
         {
-            var source = _recipes.GetByRecipe(Recipe);
-            var context = new CalculationContext(source.Code);
+            var rootRecipie = _recipes.GetByRecipe(Recipe);
+            var context = new CalculationContext(rootRecipie.Code);
 
-            OutputForRecipe(source, context);
+            WalkRecipieGraph(rootRecipie, context);
 
             var dot = context.Compile();
 
@@ -64,14 +64,14 @@ namespace Satisfactory.Calculator.Tests
             if (!Directory.Exists(fileDirectory))
                 Directory.CreateDirectory(fileDirectory);
 
-            var dotFile = Path.Combine(fileDirectory, $"{source.Code}.dot");
+            var dotFile = Path.Combine(fileDirectory, $"{rootRecipie.Code}.dot");
             File.WriteAllText(dotFile, dot);
-            var pngFile = Path.Combine(fileDirectory, $"{source.Code}.png");
+            var pngFile = Path.Combine(fileDirectory, $"{rootRecipie.Code}.png");
 
             await _graphProcessor.GenerateImage(dotFile, pngFile);
         }
 
-        private void OutputForRecipe(Recipe recipe, CalculationContext context)
+        private void WalkRecipieGraph(Recipe recipe, CalculationContext context)
         {
             var stack = context.Stack;
             var graph = context.Graph;
@@ -122,7 +122,7 @@ namespace Satisfactory.Calculator.Tests
                 var inputRecipes = _recipes.GetByOutputItem(input.ItemCode);
                 foreach (var inputRecipe in inputRecipes)
                 {
-                    OutputForRecipe(inputRecipe, context);
+                    WalkRecipieGraph(inputRecipe, context);
                 }
             }
 
