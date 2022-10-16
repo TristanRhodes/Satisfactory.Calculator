@@ -1,11 +1,9 @@
-﻿using DotNetGraph;
-using DotNetGraph.Attributes;
+﻿using DotNetGraph.Attributes;
 using DotNetGraph.Extensions;
 using DotNetGraph.Node;
 using DotNetGraph.SubGraph;
 using FluentAssertions;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Drawing;
 using Xunit;
 using Microsoft.Extensions.Configuration;
@@ -16,11 +14,15 @@ namespace Satisfactory.Calculator.Tests
 {
     public class RecipeTests
     {
+        IConfigurationRoot _config;
         RecipeRegister _Recipes;
+         DotGraphProcessor _graphProcessor;
 
         public RecipeTests()
         {
+            _config = Config.Configuration;
             _Recipes = RecipeLoader.GetRegister();
+            _graphProcessor = new DotGraphProcessor(_config);
         }
 
         [Theory]
@@ -45,17 +47,13 @@ namespace Satisfactory.Calculator.Tests
         public async Task Generate(string Recipe)
         {
             var source = _Recipes.GetByRecipe(Recipe);
+            var context = new CalculationContext(source.Code);
 
-            var graph = new DotGraph(source.Code, true);
+            OutputForRecipe(source, context);
 
-            var stack = new Stack<Recipe>();
-            OutputForRecipe(source, graph, stack);
+            var dot = context.Compile();
 
-            var dot = graph.Compile(true);
-
-            var config = Config.Configuration;
-            var fileDirectory = config["output-directory"];
-            var dotExe = config["dot-exe"];
+            var fileDirectory = _config["output-directory"];
 
             if (!Directory.Exists(fileDirectory))
                 Directory.CreateDirectory(fileDirectory);
@@ -64,23 +62,16 @@ namespace Satisfactory.Calculator.Tests
             File.WriteAllText(dotFile, dot);
             var pngFile = Path.Combine(fileDirectory, $"{source.Code}.png");
 
-            var startInfo = new ProcessStartInfo(dotExe, $"-Tpng \"{dotFile}\" -o \"{pngFile}\"");
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
-
-            var process = Process
-                .Start(startInfo);
-
-            var err = process.StandardError.ReadToEnd();
-            Console.WriteLine(err);
-            var std = process.StandardOutput.ReadToEnd();
-            Console.WriteLine(std);
-
-            await process.WaitForExitAsync();
+            await _graphProcessor.GenerateImage(dotFile, pngFile);
         }
 
-        private void OutputForRecipe(Recipe recipe, IDotGraph graph, Stack<Recipe> stack)
+
+
+        private void OutputForRecipe(Recipe recipe, CalculationContext context)
         {
+            var stack = context.Stack;
+            var graph = context.Graph;
+
             const bool useFullName = false;
             Log($"Recipe: {recipe.Code}");
 
@@ -91,37 +82,11 @@ namespace Satisfactory.Calculator.Tests
             var RecipeNode = graph.AddNode(recipeCode, n =>
             {
                 var label = useFullName ? recipeCode : recipe.Code;
-
-                var htmlBuilder = new StringBuilder();
-                htmlBuilder.AppendLine("<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">");
-
-                foreach (var input in recipe.Input)
-                {
-                    htmlBuilder.AppendLine("<TR>");
-                    htmlBuilder.AppendLine($"<TD>{input.ItemCode}</TD>");
-                    htmlBuilder.AppendLine($"<TD>{input.Quantity}</TD>");
-                    htmlBuilder.AppendLine($"<TD>{input.Quantity * ticksPerMin}pm</TD>");
-                    htmlBuilder.AppendLine("</TR>");
-                }
-
-                htmlBuilder.AppendLine("<TR>");
-                htmlBuilder.AppendLine($"<TD COLSPAN=\"3\">{label} ({recipe.Duration.TotalSeconds}s / {ticksPerMin}pm)</TD>");
-                htmlBuilder.AppendLine("</TR>");
-
-                foreach (var output in recipe.Output)
-                {
-                    htmlBuilder.AppendLine("<TR>");
-                    htmlBuilder.AppendLine($"<TD>{output.ItemCode}</TD>");
-                    htmlBuilder.AppendLine($"<TD>{output.Quantity}</TD>");
-                    htmlBuilder.AppendLine($"<TD>{output.Quantity * ticksPerMin}pm</TD>");
-                    htmlBuilder.AppendLine("</TR>");
-                }
-
-                htmlBuilder.AppendLine("</TABLE>");
+                var htmlBuilder = GetHtmlRepresentation(recipe, label);
 
                 n.Shape = DotNodeShape.None;
                 n.Label = label + $"{Environment.NewLine}";
-                n.SetCustomAttribute("label", $"<{htmlBuilder.ToString()}>");
+                n.SetCustomAttribute("label", $"<{htmlBuilder}>");
                 n.FillColor = Color.LightGreen;
                 n.Color = Color.DarkGray;
                 n.Style = DotNodeStyle.Filled;
@@ -135,7 +100,7 @@ namespace Satisfactory.Calculator.Tests
                 Log($"Input: {inputCode} x {quantity}");
 
                 var label = useFullName ? inputCode : input.ItemCode;
-                
+
                 var node = graph.AddNode(inputCode, n =>
                 {
                     n.Shape = DotNodeShape.Oval;
@@ -153,7 +118,7 @@ namespace Satisfactory.Calculator.Tests
                 var inputRecipes = _Recipes.GetByOutputItem(input.ItemCode);
                 foreach (var inputRecipe in inputRecipes)
                 {
-                    OutputForRecipe(inputRecipe, graph, stack);
+                    OutputForRecipe(inputRecipe, context);
                 }
             }
 
@@ -193,7 +158,41 @@ namespace Satisfactory.Calculator.Tests
             stack.Pop();
         }
 
-        private static void Log(string message) => 
+        private static StringBuilder GetHtmlRepresentation(Recipe recipe, string label)
+        {
+            // https://www.graphviz.org/doc/info/shapes.html#html
+            var ticksPerMin = 60 / recipe.Duration.TotalSeconds;
+
+            var htmlBuilder = new StringBuilder();
+            htmlBuilder.AppendLine("<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">");
+
+            foreach (var input in recipe.Input)
+            {
+                htmlBuilder.AppendLine("<TR>");
+                htmlBuilder.AppendLine($"<TD>{input.ItemCode}</TD>");
+                htmlBuilder.AppendLine($"<TD>{input.Quantity}</TD>");
+                htmlBuilder.AppendLine($"<TD>{input.Quantity * ticksPerMin}pm</TD>");
+                htmlBuilder.AppendLine("</TR>");
+            }
+
+            htmlBuilder.AppendLine("<TR>");
+            htmlBuilder.AppendLine($"<TD COLSPAN=\"3\"><B>{label}</B>({recipe.Duration.TotalSeconds}s / {ticksPerMin}pm)</TD>");
+            htmlBuilder.AppendLine("</TR>");
+
+            foreach (var output in recipe.Output)
+            {
+                htmlBuilder.AppendLine("<TR>");
+                htmlBuilder.AppendLine($"<TD>{output.ItemCode}</TD>");
+                htmlBuilder.AppendLine($"<TD>{output.Quantity}</TD>");
+                htmlBuilder.AppendLine($"<TD>{output.Quantity * ticksPerMin}pm</TD>");
+                htmlBuilder.AppendLine("</TR>");
+            }
+
+            htmlBuilder.AppendLine("</TABLE>");
+            return htmlBuilder;
+        }
+
+        private static void Log(string message) =>
             Console.WriteLine(message);
     }
 }
