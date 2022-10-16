@@ -8,7 +8,7 @@ namespace Satisfactory.Calculator
         {
             Console.WriteLine($"Duration: {recipe.Duration}");
 
-            var ticksPerMin = recipe.TicksPerMin();
+            var ticksPerMin = recipe.TicksPerMin;
             Console.WriteLine($"Ticks per Min: {ticksPerMin}");
 
             Console.WriteLine("Input: ");

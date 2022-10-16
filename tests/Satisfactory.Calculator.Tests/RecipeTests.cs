@@ -42,7 +42,7 @@ namespace Satisfactory.Calculator.Tests
                 new[] { new ItemQuantity("Output", 1) },
                 TimeSpan.FromSeconds(seconds));
 
-            Recipe.TicksPerMin()
+            Recipe.TicksPerMin
                 .Should().Be(ticksPerMin);
         }
 
