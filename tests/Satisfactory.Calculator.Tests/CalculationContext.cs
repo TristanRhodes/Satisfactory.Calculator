@@ -5,35 +5,36 @@ namespace Satisfactory.Calculator.Tests
 {
     public class CalculationContext
     {
-        public CalculationContext(Recipe recipe)
+        public CalculationContext(Recipe recipe, double mutliplier)
         {
-            RootRecipie = recipe;
-            Graph = new DotGraph(recipe.Code, true);
-            Stack = new Stack<Recipe>();
+            RootRecipie = new StackItem(recipe, mutliplier);
+            Stack = new Stack<StackItem>();
             Stack.Push(RootRecipie);
         }
 
-        public Recipe RootRecipie { get; }
+        public StackItem RootRecipie { get; }
 
-        public Recipe Current => Stack.Peek();
+        public StackItem Current => Stack.Peek();
 
-        public DotGraph Graph { get; }
+        public Stack<StackItem> Stack { get; }
 
-        public Stack<Recipe> Stack { get; }
+        public void Push(StackItem stackItem) =>
+            Stack.Push(stackItem);
 
-        public void Push(Recipe recipe) =>
-            Stack.Push(recipe);
-
-        public Recipe Pop() =>
+        public StackItem Pop() =>
             Stack.Pop();
-
-        public string Compile() =>
-            Graph.Compile(true);
 
         public string GetCode() =>
             Stack.GetCode();
 
         public string GetParentCode() =>
             Stack.GetParentCode();
+    }
+
+    public record StackItem(Recipe Recipe, double Multiplier)
+    {
+        public string Code => Recipe.Code;
+        public List<ItemQuantity> Input => Recipe.Input;
+        public List<ItemQuantity> Output => Recipe.Output;
     }
 }

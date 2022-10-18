@@ -27,15 +27,5 @@ namespace Satisfactory.Calculator
 
             return recipe;
         }
-
-        public static string GetCode(this Stack<Recipe> RecipeStack)
-        {
-            return string.Join(".", RecipeStack.Reverse());
-        }
-
-        public static string GetParentCode(this Stack<Recipe> RecipeStack)
-        {
-            return string.Join(".", RecipeStack.Skip(1).Reverse());
-        }
     }
 }
