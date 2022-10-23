@@ -8,7 +8,7 @@ Currently we generate a DOT graph from a simple model in a C# application, and t
 
 ## Existing Work
 
-There's already an excellent implementation of at [https://satisfactory-calculator.com/](https://satisfactory-calculator.com/) and this project is not affiliated with this in any way. I'm using this project as an environment to play with tree / graph walking algorithms. 
+There's already an excellent implementation of at [satisfactory-calculator.com/](https://satisfactory-calculator.com/) and this project is not affiliated with this in any way. I'm using this project as an environment to play with tree / graph walking algorithms. 
 
 ## Dependencies
 
