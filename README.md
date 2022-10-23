@@ -6,6 +6,10 @@ This is a sandbox for playing around with Satisfactory calculations. The aim her
 
 Currently we generate a DOT graph from a simple model in a C# application, and then feed this into GraphViz which generates an image.
 
+## Existing Work
+
+There's already an excellent implementation of at [satisfactory-calculator.com](satisfactory-calculator.com) and this project is not affiliated with this in any way. I'm using this project as an environment to play with tree / graph walking algorithms. 
+
 ## Dependencies
 
 * [GraphViz](https://www.graphviz.org/download/) - Renderer for graphs represented in the DOT file format. You will need this installed.
