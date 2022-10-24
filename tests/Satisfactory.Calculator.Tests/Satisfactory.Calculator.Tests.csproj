@@ -19,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="DotNetGraph" Version="2.7.0" />
     <PackageReference Include="FluentAssertions.Json" Version="6.1.0" />
+    <PackageReference Include="GraphVizNet" Version="1.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />

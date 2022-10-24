@@ -20,23 +20,9 @@ namespace Satisfactory.Calculator.Tests
 
         public async Task GenerateImage(string dotFile, string pngFile)
         {
-            var dotExe = _config["dot-exe"];
-            var startInfo = new ProcessStartInfo(dotExe, $"-Tpng \"{dotFile}\" -o \"{pngFile}\"");
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
+            var graphViz = new GraphVizNet.GraphViz();
 
-            var process = Process
-                .Start(startInfo);
-
-            var err = process.StandardError.ReadToEnd();
-            if (!string.IsNullOrEmpty(err))
-                throw new ApplicationException(err);
-
-            var std = process.StandardOutput.ReadToEnd();
-            if (!string.IsNullOrEmpty(std))
-                _logger.LogInformation(std);
-
-            await process.WaitForExitAsync();
+            graphViz.LayoutAndRenderDotGraphFromFile(dotFile, pngFile, "png");        
         }
     }
 }

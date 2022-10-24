@@ -12,7 +12,7 @@ There's already an excellent implementation of at [satisfactory-calculator.com/]
 
 ## Dependencies
 
-* [GraphViz](https://www.graphviz.org/download/) - Renderer for graphs represented in the DOT file format. You will need this installed.
+* [GraphViz](https://www.graphviz.org/download/) - Renderer for graphs represented in the DOT file format. This is included via NuGet package GraphVizNet.
 
 ## Configuration
 We currently have two configuration values in the app settings:
@@ -30,4 +30,4 @@ Currently this application is only tests, and only tested on windows. Running th
 
 Output currently looks like this:
 
-![Diagram](https://raw.githubusercontent.com/TristanRhodes/Satisfactory.Calculator/master/assets/Crystal%20Oscillator.png)
+![Diagram](https://raw.githubusercontent.com/TristanRhodes/Satisfactory.Calculator/master/assets/Reinforced%20Iron%20Plate.png)
