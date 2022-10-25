@@ -8,14 +8,29 @@ namespace Satisfactory.Calculator.Tests
 {
     public static class Extensions
     {
-        public static string GetCode(this Stack<StackItem> RecipeStack)
+        public static string GetCode(this StackItem item)
         {
-            return string.Join(".", RecipeStack.Reverse().Select(r => r.Recipe));
+            var parentCode = item.GetParentCode();
+            if (string.IsNullOrEmpty(parentCode))
+                return $"{item.Code}";
+            else
+                return $"{parentCode}.{item.Code}";
         }
 
-        public static string GetParentCode(this Stack<StackItem> RecipeStack)
+        public static string GetParentCode(this StackItem item)
         {
-            return string.Join(".", RecipeStack.Skip(1).Reverse().Select(r => r.Recipe));
+            var chain = new List<StackItem>();
+            var current = item.parent;
+            while(current != null)
+            {
+                chain.Add(current);
+                current = current.parent;
+            }
+
+            chain.Reverse();
+
+            return string.Join(".", chain
+                .Select(r => r.Recipe));
         }
     }
 }

@@ -70,26 +70,27 @@ namespace Satisfactory.Calculator.Tests
 
         private void WalkRecipeGraph(CalculationContext context)
         {
-            RenderRecipeNode(context);
-            RenderInputs(context);
-            RenderOutputs(context);
-            WalkChildren(context);
+            while (context.Stack.Any())
+            {
+                var current = context.Pop();
 
-            context.Pop();
+                RenderRecipeNode(current);
+                RenderInputs(current);
+                RenderOutputs(current);
+                WalkChildren(current, context);
+            }
         }
 
-        private void RenderRecipeNode(CalculationContext context)
+        private void RenderRecipeNode(StackItem current)
         {
-            var current = context.Current;
-            var recipeCode = context.GetCode();
+            var recipeCode = current.GetCode();
             _logger.LogInformation($"Recipe: {current.Code}");
             _graphBuilder.AddRecipeNode(current, recipeCode);
         }
 
-        private void RenderInputs(CalculationContext context)
+        private void RenderInputs(StackItem current)
         {
-            var current = context.Current;
-            var recipeCode = context.GetCode();
+            var recipeCode = current.GetCode();
 
             foreach (var input in current.Input)
             {
@@ -101,29 +102,26 @@ namespace Satisfactory.Calculator.Tests
             }
         }
 
-        private void RenderOutputs(CalculationContext context)
+        private void RenderOutputs(StackItem current)
         {
-            var current = context.Current;
-            var recipeCode = context.GetCode();
+            var recipeCode = current.GetCode();
 
             foreach (var output in current.Output)
             {
-                var parentInputCode = $"{context.GetParentCode()}.prod.{output.ItemCode}";
+                var parentInputCode = $"{current.GetParentCode()}.prod.{output.ItemCode}";
                 var outputCode = $"{recipeCode}.prod.{output.ItemCode}";
 
                 _logger.LogInformation($"Output: {outputCode} x {output.Quantity}");
 
-                if (context.Current != context.RootRecipie)
+                if (current.parent != null)
                     _graphBuilder.Link(recipeCode, parentInputCode);
-                else if (context.Current == context.RootRecipie)
+                else if (current.parent == null)
                     _graphBuilder.AddRecipeOutputNode(current, output, outputCode, recipeCode);
             }
         }
 
-        private void WalkChildren(CalculationContext context)
+        private void WalkChildren(StackItem current, CalculationContext context)
         {
-            var current = context.Current;
-
             foreach (var input in current.Input)
             {
                 var totalInputPerMin = current.Multiplier * current.Recipe.GetInputPerMin(input.ItemCode);
@@ -134,8 +132,7 @@ namespace Satisfactory.Calculator.Tests
                     var inputOutput = inputRecipe.GetOutputPerMin(input.ItemCode);
 
                     var multiplier = totalInputPerMin / inputOutput;
-                    context.Push(new StackItem(inputRecipe, multiplier));
-                    WalkRecipeGraph(context);
+                    context.Push(new StackItem(current, inputRecipe, multiplier));
                 }
             }
         }

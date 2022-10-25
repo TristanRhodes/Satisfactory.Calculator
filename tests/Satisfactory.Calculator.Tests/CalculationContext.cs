@@ -7,7 +7,7 @@ namespace Satisfactory.Calculator.Tests
     {
         public CalculationContext(Recipe recipe, double mutliplier)
         {
-            RootRecipie = new StackItem(recipe, mutliplier);
+            RootRecipie = new StackItem(null, recipe, mutliplier);
             Stack = new Stack<StackItem>();
             Stack.Push(RootRecipie);
         }
@@ -23,15 +23,9 @@ namespace Satisfactory.Calculator.Tests
 
         public StackItem Pop() =>
             Stack.Pop();
-
-        public string GetCode() =>
-            Stack.GetCode();
-
-        public string GetParentCode() =>
-            Stack.GetParentCode();
     }
 
-    public record StackItem(Recipe Recipe, double Multiplier)
+    public record StackItem(StackItem parent, Recipe Recipe, double Multiplier)
     {
         public string Code => Recipe.Code;
         public List<ItemQuantity> Input => Recipe.Input;
