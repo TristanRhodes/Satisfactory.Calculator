@@ -42,6 +42,33 @@ namespace Satisfactory.Calculator.Tests
         }
 
         [Theory]
+        [InlineData("Cable", 70d, 30d)]
+        [InlineData("Wire", 140d, 30d)]
+        [InlineData("Copper Ore", 70d, 60d)]
+        [InlineData("Iron Wire", 140d, 22.5d)]
+        [InlineData("Iron Wire - Iron Ore", 77.777777777779d, 30d)]
+        public void Calculator(string code, decimal needed, decimal output)
+        {
+            bool overclocking = true;
+
+            var ratio = needed / output;
+            Console.WriteLine("Ratio: " + ratio);
+
+            var baseUnits = (int)Math.Ceiling(ratio);
+            for(int units = 1; units < baseUnits * 2; units++)
+            {
+                var unitClock = ratio / units;
+                if (unitClock > 2.5m)
+                    continue;
+
+                if (unitClock > 1 && !overclocking)
+                    continue;
+
+                Console.WriteLine($"{units} Units @ {Math.Round(unitClock * 100, MidpointRounding.ToPositiveInfinity)}% Clock ({unitClock})");
+            }
+        }
+
+        [Theory]
         [InlineData(RecipeCodes.CrystalOscillator)]
         [InlineData(RecipeCodes.IronIngot)]
         [InlineData(RecipeCodes.ReinforcedIronPlate)]
